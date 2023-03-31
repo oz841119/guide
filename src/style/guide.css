@@ -1,0 +1,29 @@
+.guide_mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9997;
+    opacity: .5;
+}
+
+.guide_popover {
+    z-index: 9998;
+    position: absolute;
+    padding: 4px 8px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.guide_popover_fixed {
+    position: fixed;
+}
+
+.guide_popover_arrow_down {
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: -4px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+}

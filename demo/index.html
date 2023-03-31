@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide</title>
+</head>
+<link rel="stylesheet" href="../src/style//guide.css">
+<style>
+    body {
+        background-color: rgb(10, 72, 72);
+        --main-font-color: #f4216e
+    }
+    .title {
+        width: 300px;
+        font-size: 24px;
+        font-weight: 700;
+        padding: 12px 24px;
+        text-align: center;
+        border: 4px solid var(--main-font-color);
+        color: var(--main-font-color);
+        margin: 0 auto;
+        margin-top: 40px;
+        cursor: pointer;
+    }
+    .middle {
+        width: 300px;
+        font-size: 24px;
+        font-weight: 700;
+        padding: 12px 24px;
+        text-align: center;
+        border: 4px solid var(--main-font-color);
+        color: var(--main-font-color);
+        margin: 0 auto;
+        cursor: pointer;
+        margin-top: 3000px;
+        margin-bottom: 3000px;
+    }
+</style>
+<body>
+    <div class="title" id="title">
+        Guide Start
+    </div>
+    <div class="middle" id="middle">
+        Guide Middle
+    </div>
+    <script type="module">
+        import Guide from '../src/index.js'
+        const guide = new Guide()
+        const elTitle = document.getElementById('title')
+        const elMiddle = document.getElementById('middle')
+        elTitle.onclick = () => {
+            guide.start({
+                el: elTitle,
+                onClose: () => {
+                    guide.clear()
+                    guide.start({
+                        el: elMiddle,
+                        onClose: () => {
+                            guide.clear()
+                        }
+                    })
+                }
+            })
+        }
+    </script>
+</body>
+</html>
