@@ -5,14 +5,16 @@ export default class Guide {
         this.el = null
         this.path = null
         this.popover = null
+        this.popoverContent = 'Popover'
     }
     _renderPathBound = this.renderPath.bind(this)
-    start({el, onClose}) {
+    start({el, onClose, popoverContent}) {
         this.el = el
+        if(popoverContent) this.popoverContent = popoverContent
         if(onClose) this.onClose = onClose
         document.body.appendChild(Guide._createSVG(this))
         this.createPopover()
-        scrollTo(0, Guide._getElementDistanceFromViewportTopAndLeft(el).top)
+        scrollTo(0, Guide._getElementDistanceFromViewportTopAndLeft(el).top - 20)
         addEventListener('scroll', this._renderPathBound)
     }
     clear() {
@@ -27,20 +29,34 @@ export default class Guide {
     }
     createPopover() {
         const {h, top, left} = Guide._elComputer(this.el)
+        const pageY = window.pageYOffset
         const isNeedFixed = Guide._hasFixedAncestor(this.el)
         const popover = document.createElement('div')
-        popover.textContent = '點擊取消。';
+        popover.innerHTML = this.popoverContent;
         popover.classList.add('guide_popover')
-        popover.style.top = top + h + 20 + 'px'
+        popover.style.top = top + pageY + h + 20 + 'px'
         popover.style.left = left + 'px'
         if(isNeedFixed) popover.classList.add("guide_popover_fixed")
         const popoverArrow = document.createElement('div')
         popoverArrow.classList.add('guide_popover_arrow_down')
         popover.appendChild(popoverArrow)
-        popover.onclick = this.onClose
+        const colseEl = this.findElementOfHasAttr(popover, 'gpv-close')
+        if(colseEl) colseEl.onclick = this.onClose
         document.body.appendChild(popover);
         this.popover = popover
     }
+
+    findElementOfHasAttr(startNode, attrName ,isFound = false) {
+        if (startNode.getAttribute(attrName) !== null) return startNode
+        for (let i = 0; i < startNode.children.length; i++) {
+          const child = startNode.children[i]
+          const nextElement = this.findElementOfHasAttr(child, attrName, isFound || startNode.getAttribute(attrName) !== null)
+          if (nextElement !== null) return nextElement
+        }
+        return null;
+    }
+
+    
     static _hasFixedAncestor(el) {
         if (el === null) return false;
         const styles = window.getComputedStyle(el);

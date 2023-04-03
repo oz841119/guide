@@ -37,6 +37,13 @@
         margin-top: 3000px;
         margin-bottom: 3000px;
     }
+
+    .hint {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        color: #fff;
+    }
 </style>
 <body>
     <div class="title" id="title">
@@ -45,24 +52,62 @@
     <div class="middle" id="middle">
         Guide Middle
     </div>
+    <span class="hint" id="hint"></span>
     <script type="module">
+        let hintText = {value: ''}
+        const hintEl = document.getElementById('hint')
+        hintEl.textContent = hintText.value
+        const hintTextProxy = createProxy(hintText, hintEl)
+        hintTextProxy.value = '提示'
+
         import Guide from '../src/index.js'
         const guide = new Guide()
         const elTitle = document.getElementById('title')
         const elMiddle = document.getElementById('middle')
         elTitle.onclick = () => {
+            hintTextProxy.value += '<br/>啟用'
             guide.start({
                 el: elTitle,
-                onClose: () => {
+                popoverContent: (`<div>
+                    <div>標題</div>
+                    <div>內文</div>
+                    <div gpv-close>關閉</div>
+                    </div>`),
+                onClose: async () => {
                     guide.clear()
+                    hintTextProxy.value += '<br/>清除<br/>跳轉頁面<br/>等待API回傳資料...'
+                    await timeout(1000)
+                    hintTextProxy.value += '<br/>資料取得完成<br/>啟用'
                     guide.start({
                         el: elMiddle,
+                        popoverContent: (`<div gpv-close>清除狀態<div/>`),
                         onClose: () => {
+                            hintTextProxy.value += '<br/>清除'
                             guide.clear()
                         }
                     })
                 }
             })
+        }
+
+        function timeout(time) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve()
+                }, time);
+            })
+        }
+
+        function createProxy(target, el) {
+            if(typeof target === 'object') {
+                return new Proxy(target, {
+                    set(target, prop, value, receiver) {
+                        target[prop] = value
+                        el.innerHTML = value
+                        return true
+                    }
+                })
+            }
         }
     </script>
 </body>
